@@ -1,7 +1,15 @@
-FROM mcr.microsoft.com/dotnet.sdk:6.0
+## build ##
+FROM node:18-alpine AS build
+
 WORKDIR /app
-
 COPY . .
-RUN dotnet restore
+RUN npm install
+RUN npm run build
 
-CMD ["docnet", "run", "--urls", "hhtp://0.0.0.0:5214"]
+## run ##
+FROM nginx:alpine
+
+COPY --from=build /app/build /usr/share/nginx/html
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
