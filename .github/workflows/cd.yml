@@ -15,7 +15,7 @@ jobs:
         run: docker rm -f shoeshop_fe || true
         
       - name: Delete old image
-        run: docker rmi ${{ secrets.DOCKERHUB_USER }}/shoeshop_fe:v1
+        run: docker rmi ${{ secrets.DOCKERHUB_USER }}/shoeshop_fe:v1 || true
 
       - name: Docker pull
         run: docker pull ${{ secrets.DOCKERHUB_USER }}/shoeshop_fe:v1
