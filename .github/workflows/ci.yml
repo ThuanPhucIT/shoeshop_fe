@@ -36,7 +36,7 @@ jobs:
 
     - name: Scan with CodeClimate
       run: |
-        docker run --interactive --tty --rm \
+        docker run --rm \
         --env CODECLIMATE_CODE="$PWD" \
         --volume "$PWD":/code \
         --volume /var/run/docker.sock:/var/run/docker.sock \
