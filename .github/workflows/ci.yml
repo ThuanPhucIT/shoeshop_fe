@@ -22,17 +22,11 @@ jobs:
     - name: Push Docker image
       run: docker push ${{ secrets.DOCKERHUB_USER }}/shoeshop_fe:v1
 
-  scan_source_code:
+  scan_source_code_CLImate:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-
-    - name: Move to project directory
-      run: pwd
-      
-    - name: what in directory
-      run: ls -l 
 
     - name: Scan with CodeClimate
       run: |
@@ -41,10 +35,39 @@ jobs:
         --volume "$PWD":/code \
         --volume /var/run/docker.sock:/var/run/docker.sock \
         --volume /tmp/cc:/tmp/cc \
-        codeclimate/codeclimate analyze -f html > shoeshop_fe.html
+        codeclimate/codeclimate analyze -f html > shoeshop_fe_codeclimate.html
 
     - name: Upload HTML report as an artifact
       uses: actions/upload-artifact@v3
       with:
         name: shoeshop_fe-report
-        path: shoeshop_fe.html
+        path: shoeshop_fe_codeclimate.html
+
+        
+        
+  scan_source_code_Snyk:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Install Snyk
+      run: npm install -g snyk
+
+    - name: Install Snyk-to-html
+      run: npm install snyk-to-html -g
+
+    - name: snyk auth
+      run: snyk auth ${{ secrets.SNYK_TOKEN }}
+
+    - name: Run Snyk to check vulnerabilities
+      run: snyk test --json | snyk-to-html -o shoeshop_fe_snyk.html || true
+     
+    - name: Upload Snyk HTML report as an artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: shoeshop_fe-snyk-report
+        path: shoeshop_fe_snyk.html
