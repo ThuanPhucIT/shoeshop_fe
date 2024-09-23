@@ -21,3 +21,27 @@ jobs:
 
     - name: Push Docker image
       run: docker push ${{ secrets.DOCKERHUB_USER }}/shoeshop_fe:v1
+
+  scan_source_code:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Move to project directory
+      run: cd ./shoeshop_fe
+
+    - name: Scan with CodeClimate
+      run: |
+        docker run --interactive --tty --rm \
+        --env CODECLIMATE_CODE="$PWD" \
+        --volume "$PWD":/code \
+        --volume /var/run/docker.sock:/var/run/docker.sock \
+        --volume /tmp/cc:/tmp/cc \
+        codeclimate/codeclimate analyze -f html > online-shop-backend.html
+
+    - name: Upload HTML report as an artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: online-shop-backend-report
+        path: ./shoeshop_fe/online-shop-backend.html
