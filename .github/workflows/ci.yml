@@ -41,10 +41,10 @@ jobs:
         --volume "$PWD":/code \
         --volume /var/run/docker.sock:/var/run/docker.sock \
         --volume /tmp/cc:/tmp/cc \
-        codeclimate/codeclimate analyze -f html > online-shop-backend.html
+        codeclimate/codeclimate analyze -f html > shoeshop_fe.html
 
     - name: Upload HTML report as an artifact
       uses: actions/upload-artifact@v3
       with:
-        name: online-shop-backend-report
-        path: ./shoeshop_fe/online-shop-backend.html
+        name: shoeshop_fe-report
+        path: shoeshop_fe.html
