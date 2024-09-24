@@ -66,6 +66,7 @@ jobs:
       with:
         name: shoeshop_fe-snyk-report
         path: ./shoeshop_fe_snyk_report.html
+
         
   scan_source_code_Trivy:
     runs-on: ubuntu-latest
@@ -77,17 +78,16 @@ jobs:
       run: |
         docker run --rm -v $PWD:/shoeshop_fe -v /var/run/docker.sock:/var/run/docker.sock \
         aquasec/trivy fs /shoeshop_fe --severity HIGH,CRITICAL --format template \
-        --template "@contrib/html.tpl" --output shoeshop_fe_trivy_report.html
-        ls 
-        pwd
+        --template "@contrib/html.tpl" --output ./shoeshop_fe_trivy_report.html
 
     - name: Upload Trivy HTML report as an artifact
       uses: actions/upload-artifact@v3
       with:
         name: shoeshop_fe-trivy-report
-        path: /shoeshop_fe/shoeshop_fe_trivy_report.html
-        
-  scan_image_Tryvi:
+        path: ./shoeshop_fe_trivy_report.html
+
+
+  scan_image_Trivy:
     runs-on: ubuntu-latest
 
     steps:
@@ -95,11 +95,11 @@ jobs:
 
     - name: Trivy scan image
       run: |
-        docker run --rm -v $(pwd):/shoeshop_fe -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --reset
-        docker run --rm -v $(pwd):/shoeshop_fe -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --format template --template "@contrib/html.tpl" --output /shoeshop_fe/shoeshop_fe_trivy_image_report.html ${{ secrets.DOCKERHUB_USER }}/shoeshop_fe:v1
+        docker run --rm -v $(pwd):/shoeshop_fe -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --download-db-only
+        docker run --rm -v $(pwd):/shoeshop_fe -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --format template --template "@contrib/html.tpl" --output ./shoeshop_fe_trivy_image_report.html ${{ secrets.DOCKERHUB_USER }}/shoeshop_fe:v1
     
     - name: Upload Trivy image scan HTML report as an artifact
       uses: actions/upload-artifact@v3
       with:
         name: shoeshop_fe-trivy-image-report
-        path: /shoeshop_fe/shoeshop_fe_trivy_image_report.html
+        path: ./shoeshop_fe_trivy_image_report.html
